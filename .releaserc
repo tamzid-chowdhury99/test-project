@@ -1,0 +1,23 @@
+{
+    "tagFormat": "${version}",
+    "branches": ["master"],
+    "plugins": [
+        [
+            "@semantic-release/commit-analyzer",
+            {
+                "preset": "angular",
+                "releaseRules": [
+                    {"type": "major", "release": "major"},
+                    {"type": null, "release": "minor"}
+                ]
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "verifyReleaseCmd": "echo ${nextRelease.version} > release.version"
+            }
+        ],
+        "@semantic-release/github"
+    ]
+}

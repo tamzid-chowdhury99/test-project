@@ -1,0 +1,12 @@
+build:
+  scan:
+    enabled: false
+bake:
+  scan:
+    enabled: false
+deploy:
+  internalPort: 8080
+  env:
+    NEW_RELIC_APP_NAME: <your-application-name>-{{git.env}}
+  secrets:
+    NEW_RELIC_LICENSE_KEY: /kv/health-cloud-revolutionary/{{git.env}}/newrelic/global/license-key

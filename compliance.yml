@@ -1,0 +1,9 @@
+repository: template-maven-microservice
+organization: aetna-digital-applications
+mode: enforce
+rules:
+    - sonar_scan
+    - nexusiq
+    - twistlock
+    - checkmarx
+    - nexusiq_docker
