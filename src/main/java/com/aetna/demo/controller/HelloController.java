@@ -1,4 +1,4 @@
-package com.aetna.demo.control;
+package com.aetna.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
