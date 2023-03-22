@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://tamziduni:Shohana91!@cluster0.lgnidct.mongodb.net/demo-project
