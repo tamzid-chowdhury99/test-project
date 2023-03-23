@@ -2,22 +2,26 @@ package com.aetna.demo.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.*;
 
 @Document(collection="users")
 public class User {
     @Id
     private String userId;
-    @NotEmpty
+    @NotNull(message = "First name is required")
     private String firstName;
-    @NotEmpty
+    @NotNull(message = "Last name is required")
     private String lastName;
-    @NotEmpty
+    @NotNull(message = "Email address is required")
+    @Email(message = "Email format is invalid")
     private String email;
-    @NotEmpty
+    @NotNull(message = "Phone number is required")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number is invalid. Should be ten digits i.e. 3474359782")
     private String phoneNumber;
-    @NotEmpty
+    @NotNull(message = "Password is required")
+    @Size(min=8, max=15, message = "Password should be a length between 8 to 15 characters")
     private String password;
 
     public User(){

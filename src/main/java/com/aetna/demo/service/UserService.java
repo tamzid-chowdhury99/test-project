@@ -1,17 +1,21 @@
 package com.aetna.demo.service;
 
+import com.aetna.demo.exception.UserCollectionException;
 import com.aetna.demo.model.User;
 import com.aetna.demo.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
+@Validated
 public class UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
@@ -22,12 +26,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() throws UserCollectionException{
         List<User> users = userRepository.findAll();
         if(users.isEmpty()){
-            //create error exception here
             LOGGER.info("No users in the database");
-            return null;
+            throw new UserCollectionException(UserCollectionException.EmptyUserList());
         }
         else{
             return users;
@@ -35,13 +38,12 @@ public class UserService {
 
     }
 
-    public User getUserById(String userId){
+    public User getUserById(String userId) throws UserCollectionException {
         Optional<User> user = userRepository.findById(userId);
 
         if(!user.isPresent()){
-            //create error exception here
             LOGGER.info("User with id " + userId + " is not present in database ");
-            return null;
+            throw new UserCollectionException(UserCollectionException.NotFoundException(userId));
         }
         else{
             return user.get();
@@ -49,25 +51,26 @@ public class UserService {
 
     }
 
-    public User addUser(User user){
+    public String addUser(User user) throws UserCollectionException, ConstraintViolationException {
         Optional<User> existingUser = userRepository.findUserByEmail(user.getEmail());
         if(existingUser.isPresent()){
-            //create error exception here
             LOGGER.info("User with email " + user.getEmail() + " already exists in the database");
-            return null;
+            throw new UserCollectionException(UserCollectionException.UserAlreadyExists(user.getEmail()));
         }
         else{
-            return userRepository.save(user);
+            User newUser = userRepository.save(user);
+            LOGGER.info("User with id " + newUser.getUserId() + " was saved");
+            return newUser.getUserId();
 
         }
     }
 
-    public boolean updateUser(String userId, User user){
+    public void updateUser(String userId, User user) throws UserCollectionException, ConstraintViolationException {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if(!optionalUser.isPresent()){
             LOGGER.info("Cannot update a user that does not exist");
-            return false;
+            throw new UserCollectionException(UserCollectionException.NotFoundException(userId));
         }
 
         else {
@@ -79,20 +82,19 @@ public class UserService {
             existingUser.setPhoneNumber(user.getPhoneNumber());
 
             userRepository.save(existingUser);
-            return true;
+            LOGGER.info("User with id " + userId + " was updated");
         }
     }
 
-    public boolean deleteUserById(String userId){
+    public void deleteUserById(String userId) throws UserCollectionException{
         Optional<User> existingUser = userRepository.findById(userId);
         if(!existingUser.isPresent()){
             LOGGER.info("Cannot delete a user that does not exist");
-            return false;
+            throw new UserCollectionException(UserCollectionException.NotFoundException(userId));
         }
         else{
             userRepository.delete(existingUser.get());
             LOGGER.info("User with id " + userId + " was deleted");
-            return true;
         }
 
     }

@@ -1,5 +1,6 @@
 package com.aetna.demo.controller;
 
+import com.aetna.demo.exception.UserCollectionException;
 import com.aetna.demo.model.User;
 import com.aetna.demo.service.UserService;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 @RestController
@@ -21,54 +23,62 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-
-        if(users == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try{
+            List<User> users = userService.getAllUsers();
+            return new ResponseEntity<>(users,HttpStatus.OK);
         }
-
-        return new ResponseEntity<>(users,HttpStatus.OK);
+        catch(UserCollectionException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable(value = "id") String userId) {
-        User user = userService.getUserById(userId);
-
-        if(user == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try{
+            User user = userService.getUserById(userId);
+            return new ResponseEntity<>(user,HttpStatus.OK);
         }
-
-        return new ResponseEntity<>(user,HttpStatus.OK);
+        catch(UserCollectionException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
 
     @PostMapping("/")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        User newUser = userService.addUser(user);
-
-        if(newUser == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> register(@RequestBody User user) {
+        try {
+            String userId = userService.addUser(user);
+            return new ResponseEntity<>("Added new user with ID: " + userId, HttpStatus.OK);
+        }
+        catch(ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        catch(UserCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
 
-        LOGGER.info("User with id {} was added", user.getUserId());
-        return new ResponseEntity<>(newUser,HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") String userId, @RequestBody User user){
-        if(!userService.updateUser(userId, user)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> updateUser(@PathVariable("id") String userId, @RequestBody User user){
+        try {
+            userService.updateUser(userId, user);
+            return new ResponseEntity<>("Customer updated with ID: " + userId, HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity("Customer updated with ID: " + userId, HttpStatus.OK);
+        catch(ConstraintViolationException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        catch(UserCollectionException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable(value = "id", required = true) String userId) {
-        if(!userService.deleteUserById(userId)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> deleteUser(@PathVariable(value = "id") String userId) {
+        try{
+            userService.deleteUserById(userId);
+            return new ResponseEntity<>("Customer deleted with ID: " + userId, HttpStatus.OK);
         }
-        else{
-            return new ResponseEntity("Customer deleted with ID: " + userId, HttpStatus.OK);
+        catch(UserCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
