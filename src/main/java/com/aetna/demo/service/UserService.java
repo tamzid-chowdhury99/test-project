@@ -2,6 +2,7 @@ package com.aetna.demo.service;
 
 import com.aetna.demo.exception.UserCollectionException;
 import com.aetna.demo.model.User;
+import com.aetna.demo.model.UserLogin;
 import com.aetna.demo.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,23 +27,16 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() throws UserCollectionException{
+    public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
-        if(users.isEmpty()){
-            LOGGER.info("No users in the database");
-            throw new UserCollectionException(UserCollectionException.EmptyUserList());
-        }
-        else{
-            return users;
-        }
-
+        return users;
     }
 
-    public User getUserById(String userId) throws UserCollectionException {
+    public User getUserById(String userId) {
         Optional<User> user = userRepository.findById(userId);
 
         if(!user.isPresent()){
-            LOGGER.info("User with id " + userId + " is not present in database ");
+            LOGGER.error("User with id " + userId + " is not present in database ");
             throw new UserCollectionException(UserCollectionException.NotFoundException(userId));
         }
         else{
@@ -51,42 +45,50 @@ public class UserService {
 
     }
 
-    public String addUser(User user) throws UserCollectionException, ConstraintViolationException {
+    public String login(UserLogin userLogin){
+        Optional<User> existingUser = userRepository.findUserByEmail(userLogin.getEmail());
+        if(!existingUser.isPresent()){
+            LOGGER.error("Login failed, email or password was incorrect");
+            return "Login failed, email or password was incorrect";
+        }
+
+        if(!(userLogin.getPassword().equals(existingUser.get().getPassword()))){
+            LOGGER.error("Login failed, email or password was incorrect");
+            return "Login failed, email or password was incorrect";
+        }
+
+        return "Login was successful. Welcome " + existingUser.get().getFirstName() + " " + existingUser.get().getLastName() + "!";
+    }
+
+    public String addUser(User user) {
         Optional<User> existingUser = userRepository.findUserByEmail(user.getEmail());
         if(existingUser.isPresent()){
-            LOGGER.info("User with email " + user.getEmail() + " already exists in the database");
+            LOGGER.error("User with email " + user.getEmail() + " already exists in the database");
             throw new UserCollectionException(UserCollectionException.UserAlreadyExists(user.getEmail()));
         }
         else{
             User newUser = userRepository.save(user);
-            LOGGER.info("User with id " + newUser.getUserId() + " was saved");
+            LOGGER.error("User with id " + newUser.getUserId() + " was saved");
             return newUser.getUserId();
 
         }
     }
 
-    public void updateUser(String userId, User user) throws UserCollectionException, ConstraintViolationException {
+    public void updateUser(String userId, User user) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if(!optionalUser.isPresent()){
-            LOGGER.info("Cannot update a user that does not exist");
+            LOGGER.error("Cannot update a user that does not exist");
             throw new UserCollectionException(UserCollectionException.NotFoundException(userId));
         }
 
         else {
-            User existingUser = optionalUser.get();
-            existingUser.setFirstName(user.getFirstName());
-            existingUser.setLastName(user.getLastName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setPassword(user.getPassword());
-            existingUser.setPhoneNumber(user.getPhoneNumber());
-
-            userRepository.save(existingUser);
-            LOGGER.info("User with id " + userId + " was updated");
+            userRepository.save(user);
+            LOGGER.error("User with id " + userId + " was updated");
         }
     }
 
-    public void deleteUserById(String userId) throws UserCollectionException{
+    public void deleteUserById(String userId) {
         Optional<User> existingUser = userRepository.findById(userId);
         if(!existingUser.isPresent()){
             LOGGER.info("Cannot delete a user that does not exist");

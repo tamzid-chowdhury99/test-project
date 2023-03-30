@@ -1,10 +1,14 @@
 package com.aetna.demo.exception;
 
-public class UserCollectionException extends Exception{
+import com.cvs.digital.hc.common.error.model.Error;
+
+import java.util.List;
+
+public class UserCollectionException extends RuntimeException{
 
     private static final long serialVersionUID = 1L;
 
-    public UserCollectionException(String message){
+    public UserCollectionException(String message) {
         super(message);
     }
 
@@ -16,7 +20,4 @@ public class UserCollectionException extends Exception{
         return "User with email " + email + " already exists";
     }
 
-    public static String EmptyUserList(){
-        return "No users in the database";
-    }
 }

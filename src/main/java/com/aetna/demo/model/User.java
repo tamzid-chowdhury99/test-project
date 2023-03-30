@@ -10,18 +10,16 @@ import javax.validation.constraints.*;
 public class User {
     @Id
     private String userId;
-    @NotNull(message = "First name is required")
+    @NotNull
     private String firstName;
-    @NotNull(message = "Last name is required")
+    @NotNull
     private String lastName;
-    @NotNull(message = "Email address is required")
-    @Email(message = "Email format is invalid")
+    @NotNull
+    @Email
     private String email;
-    @NotNull(message = "Phone number is required")
-    @Pattern(regexp = "^\\d{10}$", message = "Phone number is invalid. Should be ten digits i.e. 3474359782")
+    @NotNull
     private String phoneNumber;
-    @NotNull(message = "Password is required")
-    @Size(min=8, max=15, message = "Password should be a length between 8 to 15 characters")
+    @NotNull
     private String password;
 
     public User(){
