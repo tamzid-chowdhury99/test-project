@@ -1,12 +1,8 @@
 package com.aetna.demo.controller;
-
-import com.aetna.demo.exception.UserCollectionException;
 import com.aetna.demo.model.User;
 import com.aetna.demo.model.UserLogin;
 import com.aetna.demo.service.UserService;
-import com.cvs.digital.hc.common.error.model.Error;
 import com.cvs.digital.hc.common.error.model.ResponseModel;
-import com.cvs.digital.hc.common.error.model.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @RestController
@@ -52,13 +47,13 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable("id") String userId, @RequestBody User user){
             userService.updateUser(userId, user);
-            return new ResponseEntity<>("Customer updated with ID: " + userId, HttpStatus.OK);
+            return new ResponseEntity<>("User updated with ID: " + userId, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable(value = "id") String userId) {
             userService.deleteUserById(userId);
-            return new ResponseEntity<>("Customer deleted with ID: " + userId, HttpStatus.OK);
+            return new ResponseEntity<>("User deleted with ID: " + userId, HttpStatus.OK);
     }
 
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.ConstraintViolationException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +74,7 @@ public class UserService {
         }
     }
 
-    public void updateUser(String userId, User user) {
+    public String updateUser(String userId, User user) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if(!optionalUser.isPresent()){
@@ -85,10 +85,11 @@ public class UserService {
         else {
             userRepository.save(user);
             LOGGER.error("User with id " + userId + " was updated");
+            return "User with id " + userId + " was updated";
         }
     }
 
-    public void deleteUserById(String userId) {
+    public String deleteUserById(String userId) {
         Optional<User> existingUser = userRepository.findById(userId);
         if(!existingUser.isPresent()){
             LOGGER.info("Cannot delete a user that does not exist");
@@ -97,6 +98,7 @@ public class UserService {
         else{
             userRepository.delete(existingUser.get());
             LOGGER.info("User with id " + userId + " was deleted");
+            return "User with id " + userId + " was deleted";
         }
 
     }

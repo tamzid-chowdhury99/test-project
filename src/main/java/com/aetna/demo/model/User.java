@@ -26,11 +26,11 @@ public class User {
 
     }
 
-    public User(String userId, String email, String firstName, String lastName, String phoneNumber, String password) {
+    public User(String userId, String firstName, String lastName, String email, String phoneNumber, String password) {
         this.userId = userId;
-        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
     }
