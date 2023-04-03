@@ -40,6 +40,7 @@ public class UserService {
             throw new UserCollectionException(UserCollectionException.NotFoundException(userId));
         }
         else{
+            LOGGER.info("User found with id " + userId);
             return user.get();
         }
 

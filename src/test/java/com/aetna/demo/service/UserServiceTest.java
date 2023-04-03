@@ -72,35 +72,6 @@ public class UserServiceTest
     }
 
     @Test
-    public void testGetAllUsers(){
-
-        userList = new ArrayList<>();
-        userList.add(user1);
-        userList.add(user2);
-        userList.add(user3);
-
-        //Positive Case - Get all users
-        Mockito.when(userRepository.findAll()).thenReturn(userList);
-        List<User> users = userService.getAllUsers();
-        Assert.assertEquals(users, userList);
-        Assert.assertEquals(users.size(), 3);
-    }
-
-    @Test
-    public void testGetUserById(){
-
-        //Positive case - When user exists (user1 was mocked in the setup function)
-        User user = userService.getUserById("1");
-        Assert.assertEquals(user1, user);
-
-        //Negative Case - When user does not exist
-        Mockito.when(userRepository.findById("5")).thenReturn(Optional.empty());
-        Exception exception = Assert.assertThrows(UserCollectionException.class, () -> userService.getUserById("5"));
-        Assert.assertEquals("User with id 5 does not exist", exception.getMessage());
-
-    }
-
-    @Test
     public void testLogin(){
 
         //Positive case - When user successfully logs in
@@ -158,6 +129,35 @@ public class UserServiceTest
         Mockito.when(userRepository.findById("5")).thenReturn(Optional.empty());
         Exception exception = Assert.assertThrows(UserCollectionException.class, () -> userService.deleteUserById("5"));
         Assert.assertEquals("User with id 5 does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testGetAllUsers(){
+
+        userList = new ArrayList<>();
+        userList.add(user1);
+        userList.add(user2);
+        userList.add(user3);
+
+        //Positive Case - Get all users
+        Mockito.when(userRepository.findAll()).thenReturn(userList);
+        List<User> users = userService.getAllUsers();
+        Assert.assertEquals(users, userList);
+        Assert.assertEquals(users.size(), 3);
+    }
+
+    @Test
+    public void testGetUserById(){
+
+        //Positive case - When user exists (user1 was mocked in the setup function)
+        User user = userService.getUserById("1");
+        Assert.assertEquals(user1, user);
+
+        //Negative Case - When user does not exist
+        Mockito.when(userRepository.findById("5")).thenReturn(Optional.empty());
+        Exception exception = Assert.assertThrows(UserCollectionException.class, () -> userService.getUserById("5"));
+        Assert.assertEquals("User with id 5 does not exist", exception.getMessage());
+
     }
 
 
